@@ -6,7 +6,7 @@ import os
 import graphlab.aggregate as agg
 import array
 
-import sys
+# import sys
 import math
 
 # gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", os.path.expanduser("~/data/tmp/"))
