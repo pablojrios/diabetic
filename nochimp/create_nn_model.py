@@ -13,6 +13,7 @@ model_name = "full-inet-small-checkpoint-iter20"
 which_model = 0
 train_model = False  # if train_model == False convnet is already trained and just need to load model from disk
 test_model = True
+use_validation_set = False
 
 print "Running model %d, %s" % (which_model, model_name)
 
@@ -20,14 +21,20 @@ alt_path = os.path.expanduser("~/data/tmp/")
 if os.path.exists(alt_path):
     gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", alt_path)
 
-model_path = "nn_256x256/model-iter20/"
+# model_path = "nn_256x256/model-iter20/"
+model_path = "nn_256x256/models"
 full_model_name = model_path + "gpu_model_%d-%s" % (which_model, model_name)
 
-X_train = gl.SFrame("image-sframes/train-%d/" % which_model)
+if use_validation_set:
+    X_train = gl.SFrame("image-sframes/train-%d/" % which_model)
+else:
+    X_train = gl.SFrame("image-sframes/train")
 print "Number of images in train set = %d" % X_train.num_rows()
 
 if train_model:
-    X_valid = gl.SFrame("image-sframes/validation-%d/" % which_model)
+    X_valid = None
+    if use_validation_set:
+        X_valid = gl.SFrame("image-sframes/validation-%d/" % which_model)
 
     network_str = '''
     netconfig=start
@@ -89,7 +96,7 @@ if train_model:
         mean_image = mean_image_sf["image"][0]
     else:
         mean_image = X_train["image"].mean()
-        mean_image_sf = gl.SFrame({"image" : [mean_image]})
+        mean_image_sf = gl.SFrame({"image": [mean_image]})
         mean_image_sf.save("image-sframes/mean_image")
 
     if which_model == 0:

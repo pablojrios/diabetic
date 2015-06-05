@@ -10,6 +10,7 @@ import array
 import math
 
 # gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", os.path.expanduser("~/data/tmp/"))
+save_regression_value = True
 
 base_path = os.getcwd()
 
@@ -80,8 +81,6 @@ def get_number(s):
 X_out['number'] = X_out['name'].apply(get_number)
 X_out = X_out.sort('number')
 X_out.rename({"name" : "image"})
-
-save_regression_value = True
 
 import csv
 
