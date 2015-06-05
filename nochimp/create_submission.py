@@ -10,7 +10,7 @@ import array
 import math
 
 # gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", os.path.expanduser("~/data/tmp/"))
-save_regression_value = True
+save_regression_value = False
 
 base_path = os.getcwd()
 

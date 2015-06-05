@@ -9,12 +9,12 @@ import os
 # put a image-sframes/ directory with train and test SFrames in the
 # save_path location below. 
 
-os.chdir('/home/pablo/Kaggle/kaggle-train')
+# os.chdir('/home/pablo/Kaggle/kaggle-train')
 
 # preprocessed_image_path = "processed/"
 preprocessed_image_path = "processed/"
-save_train = True
-save_test = False
+save_train = False
+save_test = True
 
 print "current working directory = %s" % os.getcwd()
 
@@ -80,11 +80,11 @@ if save_train:
     # Create a copy of the SFrame where the rows have been shuffled randomly.
     # X_train = gl.cross_validation.shuffle(X_train)
 
-    print "Saving training SFrame"
+    print "Saving %d images in training SFrame" % X_train.num_rows()
     # Save sframes to a bucket
     X_train.save(save_path + "image-sframes/train")
 
 
 if save_test:
-    print "Saving testing SFrame"
+    print "Saving %d images in testing SFrame" % X_test.num_rows()
     X_test.save(save_path + "image-sframes/test")

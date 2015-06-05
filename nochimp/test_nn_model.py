@@ -12,11 +12,11 @@ alt_path = os.path.expanduser("~/data/tmp/")
 if os.path.exists(alt_path):
     gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", alt_path)
 
-model_path = "nn_256x256/models/"
+model_path = "../ts-imbalanced-5000/nn_256x256/models/"
 test_scores_path = "nn_256x256/models/"
 # en "../kaggle-train/image-sframes/test/" tengo el test set de Kaggle de 54K
 # test_sframe_path = "../kaggle-train/image-sframes/validation-0/"
-test_sframe_path = "../kaggle-train/image-sframes/test/"
+test_sframe_path = "image-sframes/test/"
 
 X_test = gl.SFrame(test_sframe_path)
 print "Number of images in test set = %d" % X_test.num_rows()
@@ -71,6 +71,3 @@ Xtsty = Xtsty.join(Xtsty2[["name", features_column]], on = "name")
 
 print "Saving %s" % model_path + "/scores_test_%d" % which_model
 Xtsty[["name", score_column, features_column]].save(test_scores_path + "/scores_test_%d" % which_model)
-
-
-

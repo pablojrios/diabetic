@@ -9,8 +9,9 @@ import math
 
 # model_name: por el momento solo lo estoy usando en el nombre de los archivos .csv con los scores de training y testing
 # de la convnet
-model_name = "nn500-1000-8+8"
+model_name = "ts-imbalanced-5000"
 generate_nn_output = False
+save_regression_value = False
 
 # siguientes 4 lineas para el merge
 # model_path = "../NN500/nn_256x256/models/"
@@ -19,7 +20,7 @@ generate_nn_output = False
 # test_scores_path_2 = "nn_256x256/models/"
 # model_path = "nn_256x256/models/"
 test_scores_path = "nn_256x256/models/"
-model_path = "nn_256x256/models/"
+model_path = "../ts-imbalanced-5000/nn_256x256/models/"
 # model_path = "nn_256x256/models/"
 # test_scores_path = "nn_256x256/models/"
 
@@ -77,7 +78,11 @@ train_sf, test_sf, feature_names = getScores(model_path, test_scores_path, convn
 
 print train_sf[0].column_names(), test_sf[0].column_names(), feature_names
 
-X_train, X_valid = train_sf[0].random_split(0.95)
+percent_validation_examples = 0.0
+X_train = train_sf[0]
+X_valid = None
+if percent_validation_examples > 0:
+    X_train, X_valid = train_sf[0].random_split(1-percent_validation_examples)
 X_test = test_sf[0]
 
 if generate_nn_output:
@@ -101,7 +106,7 @@ c3 = 0.1
 m = gl.regression.boosted_trees_regression.create(
     X_train, target = "level", features = feature_names,
     max_iterations=iter, validation_set=X_valid,
-    column_subsample=c1, row_subsample=0.5, step_size=0.01, max_depth = 6)
+    column_subsample=0.2, row_subsample=0.5, step_size=0.01)
 
 # m2 = gl.classifier.boosted_trees_classifier.create(X_train, target = "level",
 #     features = feature_names, column_subsample=0.2, row_subsample=1, step_size=0.01, max_depth = 6)
@@ -119,19 +124,15 @@ m.summary()
 
 # Evaluate the model and save the results into a dictionary
 # results = m2.evaluate(X_train)
-
-print "getting predictions"
-# predict retorna un SArray con el predicted target value para cada ejemplo en X_test
-X_test['level'] = m.predict(X_test).apply(lambda x: min(4, max(0, int(round(x)))))
-
-# agrego el valor predicho
-X_test['predicted'] = m.predict(X_test)
-
 # Save predictions to an SFrame (class and corresponding class-probabilities)
 # predictions = m2.classify(X_test)
 
-# X_out = X_test[['name', 'level', 'predicted']]
-X_out = X_test[['name', 'level']]
+print "getting predictions"
+# predict retorna un SArray con el predicted target value para cada ejemplo en X_test
+X_test['regression'] = m.predict(X_test)
+X_test['level'] = X_test['regression'].apply(lambda x: min(4, max(0, int(round(x)))))
+
+X_out = X_test[['name', 'level', 'regression']]
 
 def get_number(s):
     n = float(re.match('[0-9]+', s).group(0))
@@ -146,8 +147,9 @@ X_out.rename({"name" : "image"})
 
 with open('submission.csv', 'wb') as outfile:
 
-    fieldnames = ['image', 'level', 'predicted']
-    # fieldnames = ['image', 'level']
+    fieldnames = ['image', 'level']
+    if save_regression_value:
+        fieldnames.append('regression')
     writer = csv.DictWriter(outfile, fieldnames=fieldnames)
 
     writer.writeheader()
