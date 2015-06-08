@@ -9,11 +9,13 @@ import array
 import sys
 
 # model_name = "full-inet-small"
-model_name = "full-inet-small-checkpoint-iter20"
+model_name = "full-inet-small-ReLU"
 which_model = 0
-train_model = False  # if train_model == False convnet is already trained and just need to load model from disk
+train_model = True  # if train_model == False convnet is already trained and just need to load model from disk
 test_model = True
 use_validation_set = False
+
+print "current working directory = %s" % os.getcwd()
 
 print "Running model %d, %s" % (which_model, model_name)
 
@@ -22,7 +24,7 @@ if os.path.exists(alt_path):
     gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", alt_path)
 
 # model_path = "nn_256x256/model-iter20/"
-model_path = "nn_256x256/models"
+model_path = "nn_256x256/models/"
 full_model_name = model_path + "gpu_model_%d-%s" % (which_model, model_name)
 
 if use_validation_set:
@@ -35,6 +37,7 @@ if train_model:
     X_valid = None
     if use_validation_set:
         X_valid = gl.SFrame("image-sframes/validation-%d/" % which_model)
+        print "Number of images in validation set = %d" % X_valid.num_rows()
 
     network_str = '''
     netconfig=start
@@ -64,7 +67,7 @@ if train_model:
       init_sigma = 0.01
     layer[7->8] = dropout
       threshold = 0.5
-    layer[8->9] = sigmoid
+    layer[8->9] = relu
     layer[9->10] = fullc
       num_hidden_units = 128
       init_sigma = 0.01
@@ -82,13 +85,14 @@ if train_model:
     init_random = gaussian
 
     ## learning parameters
-    learning_rate = 0.025
+    learning_rate = 0.02
     momentum = 0.9
     l2_regularization = 0.0
     divideby = 255
     # end of config
     ''' % (5 if which_model == 0 else 2)
 
+# Momentum and Learning Rate Adaptation (http://www.willamette.edu/~gorr/classes/cs449/momrate.html)
     network = gl.deeplearning.NeuralNet(conf_str=network_str)
 
     if os.path.exists("image-sframes/mean_image"):
@@ -179,8 +183,8 @@ Xty2[features_column] = Xty2["ft"].apply(flatten_dict)
 
 Xty = Xty.join(Xty2[["name", features_column]], on = "name")
 
-print "Saving %s" % model_path + "/scores_train_%d" % which_model
-Xty[["name", score_column, "level", features_column]].save(model_path + "/scores_train_%d" % which_model)
+print "Saving %s" % model_path + "scores_train_%d" % which_model
+Xty[["name", score_column, "level", features_column]].save(model_path + "scores_train_%d" % which_model)
 
 if test_model:
     X_test = gl.SFrame("image-sframes/test/")
@@ -203,5 +207,5 @@ if test_model:
 
     Xtsty = Xtsty.join(Xtsty2[["name", features_column]], on = "name")
 
-    print "Saving %s" % model_path + "/scores_test_%d" % which_model
-    Xtsty[["name", score_column, features_column]].save(model_path + "/scores_test_%d" % which_model)
+    print "Saving %s" % model_path + "scores_test_%d" % which_model
+    Xtsty[["name", score_column, features_column]].save(model_path + "scores_test_%d" % which_model)

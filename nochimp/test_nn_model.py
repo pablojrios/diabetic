@@ -6,13 +6,15 @@ import array
 model_name = "full-inet-small"
 which_model = 0
 
+print "current working directory = %s" % os.getcwd()
+
 print "Testing model %d, %s" % (which_model, model_name)
 
 alt_path = os.path.expanduser("~/data/tmp/")
 if os.path.exists(alt_path):
     gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", alt_path)
 
-model_path = "../ts-imbalanced-5000/nn_256x256/models/"
+model_path = "../ts-imbalanced-5000-12r/nn_256x256/models/"
 test_scores_path = "nn_256x256/models/"
 # en "../kaggle-train/image-sframes/test/" tengo el test set de Kaggle de 54K
 # test_sframe_path = "../kaggle-train/image-sframes/validation-0/"
@@ -69,5 +71,5 @@ Xtsty2[features_column] = Xtsty2["ft"].apply(flatten_dict)
 
 Xtsty = Xtsty.join(Xtsty2[["name", features_column]], on = "name")
 
-print "Saving %s" % model_path + "/scores_test_%d" % which_model
-Xtsty[["name", score_column, features_column]].save(test_scores_path + "/scores_test_%d" % which_model)
+print "Saving %s" % model_path + "scores_test_%d" % which_model
+Xtsty[["name", score_column, features_column]].save(test_scores_path + "scores_test_%d" % which_model)

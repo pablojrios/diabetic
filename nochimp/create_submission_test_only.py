@@ -9,9 +9,9 @@ import math
 
 # model_name: por el momento solo lo estoy usando en el nombre de los archivos .csv con los scores de training y testing
 # de la convnet
-model_name = "ts-imbalanced-5000"
+model_name = "NA"
 generate_nn_output = False
-save_regression_value = False
+save_regression_value = True
 
 # siguientes 4 lineas para el merge
 # model_path = "../NN500/nn_256x256/models/"
