@@ -16,6 +16,7 @@ labels_raters = labels_pred.join(labels_actual, on="image")
 columns = labels_raters.column_names()
 # columns == ['image', 'level', 'predicted', 'level.1']
 # rater_b son las predicciones
+
 # rater_a son los 'ground truth' values
 rater_a, rater_b = labels_raters["level.1"], labels_raters["level"]
 qwk = score.quadratic_weighted_kappa(rater_a, rater_b)

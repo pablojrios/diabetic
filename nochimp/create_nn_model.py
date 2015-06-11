@@ -23,14 +23,16 @@ alt_path = os.path.expanduser("~/data/tmp/")
 if os.path.exists(alt_path):
     gl.set_runtime_config("GRAPHLAB_CACHE_FILE_LOCATIONS", alt_path)
 
-# model_path = "nn_256x256/model-iter20/"
 model_path = "nn_256x256/models/"
+test_scores_path = "../ts-imbalanced-3000/nn_256x256/models/"
+test_sframe_path = "../ts-imbalanced-3000/image-sframes/test/"
+
 full_model_name = model_path + "gpu_model_%d-%s" % (which_model, model_name)
 
 if use_validation_set:
     X_train = gl.SFrame("image-sframes/train-%d/" % which_model)
 else:
-    X_train = gl.SFrame("image-sframes/train")
+    X_train = gl.SFrame("image-sframes/train/")
 print "Number of images in train set = %d" % X_train.num_rows()
 
 if train_model:
@@ -86,7 +88,7 @@ if train_model:
 
     ## learning parameters
     learning_rate = 0.02
-    momentum = 0.9
+    momentum = 0.95
     l2_regularization = 0.0
     divideby = 255
     # end of config
@@ -187,7 +189,7 @@ print "Saving %s" % model_path + "scores_train_%d" % which_model
 Xty[["name", score_column, "level", features_column]].save(model_path + "scores_train_%d" % which_model)
 
 if test_model:
-    X_test = gl.SFrame("image-sframes/test/")
+    X_test = gl.SFrame(test_sframe_path)
     print "Number of images in test set = %d" % X_test.num_rows()
 
     print "Getting top-k predictions for testing dataset"
@@ -208,4 +210,4 @@ if test_model:
     Xtsty = Xtsty.join(Xtsty2[["name", features_column]], on = "name")
 
     print "Saving %s" % model_path + "scores_test_%d" % which_model
-    Xtsty[["name", score_column, features_column]].save(model_path + "scores_test_%d" % which_model)
+    Xtsty[["name", score_column, features_column]].save(test_scores_path + "scores_test_%d" % which_model)

@@ -11,7 +11,7 @@ import math
 # de la convnet
 model_name = "NA"
 generate_nn_output = False
-save_regression_value = True
+save_regression_value = False
 
 # siguientes 4 lineas para el merge
 # model_path = "../NN500/nn_256x256/models/"
@@ -20,7 +20,7 @@ save_regression_value = True
 # test_scores_path_2 = "nn_256x256/models/"
 # model_path = "nn_256x256/models/"
 test_scores_path = "nn_256x256/models/"
-model_path = "../ts-imbalanced-5000/nn_256x256/models/"
+model_path = "nn_256x256/models/"
 # model_path = "nn_256x256/models/"
 # test_scores_path = "nn_256x256/models/"
 
@@ -40,7 +40,7 @@ def getScores(model_path, test_scores_path, convnet_list):
 
         try:
             Xf_train = gl.SFrame(model_path + "/scores_train_%d" % n)
-            Xf_test = gl.SFrame(test_scores_path + "/scores_test_%d" % n)
+            Xf_test = gl.SFrame(test_scores_path + "/scores_train_%d" % n)
 
             train_sf.append(Xf_train)
             test_sf.append(Xf_test)
@@ -127,7 +127,7 @@ m.summary()
 # Save predictions to an SFrame (class and corresponding class-probabilities)
 # predictions = m2.classify(X_test)
 
-print "getting predictions"
+print "getting predictions for %d images" % X_test.num_rows()
 # predict retorna un SArray con el predicted target value para cada ejemplo en X_test
 X_test['regression'] = m.predict(X_test)
 X_test['level'] = X_test['regression'].apply(lambda x: min(4, max(0, int(round(x)))))
