@@ -19,6 +19,7 @@ save_regression_value = False
 # model_path_2 = "nn_256x256/models/"
 # test_scores_path_2 = "nn_256x256/models/"
 # model_path = "nn_256x256/models/"
+#test_scores_path = "../ts-imbalanced-3000/nn_256x256/models/"
 test_scores_path = "nn_256x256/models/"
 model_path = "nn_256x256/models/"
 # model_path = "nn_256x256/models/"

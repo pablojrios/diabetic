@@ -9,7 +9,7 @@ import array
 import sys
 
 # model_name = "full-inet-small"
-model_name = "full-inet-small-ReLU"
+model_name = "full-inet-small"
 which_model = 0
 train_model = True  # if train_model == False convnet is already trained and just need to load model from disk
 test_model = True
@@ -68,8 +68,8 @@ if train_model:
     num_hidden_units = 128
       init_sigma = 0.01
     layer[7->8] = dropout
-      threshold = 0.5
-    layer[8->9] = relu
+      threshold = 0.6
+    layer[8->9] = sigmoid
     layer[9->10] = fullc
       num_hidden_units = 128
       init_sigma = 0.01
@@ -87,8 +87,8 @@ if train_model:
     init_random = gaussian
 
     ## learning parameters
-    learning_rate = 0.02
-    momentum = 0.95
+    learning_rate = 0.025
+    momentum = 0.9
     l2_regularization = 0.0
     divideby = 255
     # end of config
